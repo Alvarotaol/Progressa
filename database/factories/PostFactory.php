@@ -1,0 +1,27 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Project;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
+ */
+class PostFactory extends Factory {
+	/**
+	 * Define the model's default state.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function definition(): array {
+		$projects = Project::all();
+		return [
+			"content" => $this->faker->text(),
+			"project_id" => $projects->random()->id, //Random project
+			"is_hidden" => $this->faker->boolean(),
+			"created_at" => now(),
+			"updated_at" => now(),
+		];
+	}
+}

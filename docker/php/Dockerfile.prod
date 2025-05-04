@@ -1,0 +1,40 @@
+# Usando uma imagem base PHP com FPM para rodar o Laravel
+FROM php:8.4-fpm
+
+# Instalar dependências mínimas do sistema e do PHP para produção
+RUN apt-get update && apt-get install -y \
+	libzip-dev libpng-dev libonig-dev libxml2-dev unzip curl \
+	&& docker-php-ext-install pdo_mysql zip
+
+RUN useradd -u 1000 -ms /bin/bash devuser
+
+# Copiar o Composer para usar na imagem
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Instalar Node.js (se necessário para o build do frontend)
+RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
+
+# Definir diretório de trabalho
+WORKDIR /var/www
+
+# Copiar os arquivos da aplicação para dentro da imagem
+COPY . .
+
+RUN chown -R devuser:devuser /var/www
+USER devuser
+
+# Instalar dependências do Laravel
+RUN composer install --no-dev --optimize-autoloader
+
+# Instalar as dependências do frontend e fazer o build (por exemplo, usando npm ou yarn)
+RUN npm install
+RUN npm run build
+
+USER root
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage /var/www/public
+
+# Expor a porta 9000 para o PHP-FPM
+EXPOSE 9000
+
+# Rodar o servidor PHP-FPM
+CMD ["php-fpm"]
