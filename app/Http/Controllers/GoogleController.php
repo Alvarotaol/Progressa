@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
 
 class GoogleController extends Controller {
 	public function redirect() {
@@ -33,12 +32,11 @@ class GoogleController extends Controller {
 		}
 
 		//Criar token se necessário
-		if ($user->tokens()->count() == 0) {
-			$user->createToken($user->name . '-AuthToken')->plainTextToken;
-		}
+		$token = $user->createToken($user->name . '-AuthToken')->accessToken;
+
 
 		return response()->view('auth_callback', [
-			'token' => $user->tokens()->first()->plainTextToken,
+			'token' => $token,
 			'user' => $user,
 		]);
 	}

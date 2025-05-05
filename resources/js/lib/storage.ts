@@ -24,10 +24,14 @@ export default {
 	saveToken: function (token: string) {
 		setKey("access_token", `Bearer ${token}`);
 	},
-	saveUserData: function (nome: string) {
+	saveUserData: function (nome: string, email: string, avatar: string) {
 		setKey("nome", nome);
+		setKey("email", email);
+		setKey("avatar", avatar);
 	},
 	getUserName: () => getKey("nome"),
+	getUserEmail: () => getKey("email"),
+	getUserAvatar: () => getKey("avatar"),
 	//TODO o que é isso?
 	clear: function () {
 		clearStorage();

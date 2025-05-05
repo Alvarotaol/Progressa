@@ -13,12 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
-import storage from '@/libs/storage'
+import storage from '@/lib/storage'
+import { useRouter } from 'vue-router'
 
-const email = ref('')
-const password = ref('')
+const router = useRouter();
 
 const loginWithGoogle = () => {
 	const width = 500;
@@ -38,11 +37,10 @@ const loginWithGoogle = () => {
 
 		const { token, user } = event.data;
 
-		console.log('Token recebido:', token);
-		console.log('User recebido:', user);
-
 		if (token) {
 			storage.saveToken(token);
+			storage.saveUserData(user.name, user.email, user.avatar);
+			router.push({ name: 'dashboard' });
 		}
 	});
 }

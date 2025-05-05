@@ -11,7 +11,7 @@
 			</nav>
 			<!-- Ícone do usuário com dropdown -->
 			<div class="relative" @click="toggleDropdown">
-				<img :src="$page.props.auth.user?.avatar" alt="Usuário"
+				<img :src="storage.getUserAvatar()" alt="Usuário"
 					class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
 
 				<div v-if="open"
@@ -27,12 +27,13 @@
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Sidebar esquerda -->
 			<aside class="bg-gray-100 w-64 p-4 overflow-y-auto hidden md:block border-r">
-				<h2 class="text-md font-semibold mb-4" @click="refreshProjects">Projetos</h2>
+				<h2 class="text-md font-semibold mb-4">Projetos</h2>
 				<ul class="space-y-2">
 					<li v-for="project in projects" :key="project.id">
-						<a :href="route('posts', project.id)" class="block px-3 py-2 rounded-lg hover:bg-indigo-100">
-							{{ project.name }}
-						</a>
+						<router-link
+							class="hover:text-indigo-500 block px-2 py-1 border-l-4 border-transparent hover:border-indigo-500"
+							:to="{ name: 'posts', params: { project_id: project.id } }">{{ project.name
+							}}</router-link>
 					</li>
 				</ul>
 				<button class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
@@ -40,20 +41,17 @@
 				</button>
 			</aside>
 
-			<!-- Conteúdo do feed + calendário -->
-			<main class="flex-1 overflow-y-auto">
-				<slot />
-			</main>
+			<router-view :key="$route.fullPath" class="margin-bottom"></router-view>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-
 import AppLogo from '@/components/AppLogo.vue';
 import { Model, request } from '@/lib/http';
 import { onMounted, ref } from 'vue';
 import { Project } from '@/types';
+import storage from '@/lib/storage';
 
 const open = ref(false);
 const projects = ref<Project[]>([]);
@@ -67,10 +65,6 @@ const logout = () => {
 	request('logout').then(() => {
 		window.location.href = '/login';
 	})
-};
-
-const refreshProjects = () => {
-	fetchProjects();
 };
 
 const fetchProjects = () => {
