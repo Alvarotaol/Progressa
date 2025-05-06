@@ -19,7 +19,10 @@ class UpdateProjectRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			//
+			"name" => ["required", "string", "max:63"],
+			"description" => ["nullable", "string", "max:255"],
+			"is_public" => ["boolean"],
+			"is_active" => ["boolean"],
 		];
 	}
 }

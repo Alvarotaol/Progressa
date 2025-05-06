@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+
 class StoreProjectRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -19,13 +20,16 @@ class StoreProjectRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			//
+			"name" => ["required", "string", "max:63"],
+			"description" => ["nullable", "string", "max:255"],
+			"is_public" => ["boolean"],
+			"is_active" => ["boolean"],
 		];
 	}
 
 	protected function prepareForValidation() {
 		$this->merge([
-			"user_id" => auth()->user()->id
+			"user_id" => request()->user()->id
 		]);
 	}
 }

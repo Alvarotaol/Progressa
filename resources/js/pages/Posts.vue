@@ -67,7 +67,7 @@ const handleNewPost = function ({ content, tags }: { content: string; tags: any[
 const fetchPosts = () => {
 	if (!$route.params.project_id) return;
 	postsModel.list({ project_id }).then((response) => {
-		posts.value = response.data;
+		posts.value = response.data.data;
 	}); //TODO: catch
 }
 

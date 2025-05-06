@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListTagsRequest;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
 
 class TagController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index() {
-		if(request()->project_id) {
-			return Tag::where('project_id', request()->project_id)->get();
-		}
+	public function index(ListTagsRequest $request) {
+		$tags = Tag::where('project_id', $request->project_id)->get();
+
+		return TagResource::collection($tags);
 	}
 
 	/**
@@ -22,14 +24,14 @@ class TagController extends Controller {
 	public function store(StoreTagRequest $request) {
 		$tag = Tag::create($request->all());
 
-		return $tag;
+		return new TagResource($tag);
 	}
 
 	/**
 	 * Display the specified resource.
 	 */
 	public function show(Tag $tag) {
-		return $tag;
+		return new TagResource($tag);
 	}
 
 	/**
@@ -37,7 +39,7 @@ class TagController extends Controller {
 	 */
 	public function update(UpdateTagRequest $request, Tag $tag) {
 		$tag->update($request->all());
-		return $tag;
+		return new TagResource($tag);
 	}
 
 	/**

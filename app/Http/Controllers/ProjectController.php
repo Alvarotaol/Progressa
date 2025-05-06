@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 
 class ProjectController extends Controller {
@@ -11,10 +12,9 @@ class ProjectController extends Controller {
 	 * Display a listing of the resource.
 	 */
 	public function index() {
-		//dd(auth()->user());
-		$projects = Project::where('user_id', request()->user()->id)->get();
+		$projects = Project::where('user_id', request()->user()->id)->with('tags')->get();
 
-		return $projects;
+		return ProjectResource::collection($projects);
 	}
 
 	/**
@@ -23,14 +23,14 @@ class ProjectController extends Controller {
 	public function store(StoreProjectRequest $request) {
 		$project = Project::create($request->all());
 
-		return $project;
+		return new ProjectResource($project);
 	}
 
 	/**
 	 * Display the specified resource.
 	 */
 	public function show(Project $project) {
-		return $project->load('tags');
+		return new ProjectResource($project);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class ProjectController extends Controller {
 	public function update(UpdateProjectRequest $request, Project $project) {
 		$project->update($request->all());
 
-		return $project;
+		return new ProjectResource($project);
 	}
 
 	/**

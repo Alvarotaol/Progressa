@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListPostsRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 
 class PostController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index() {
-		if (request()->project_id) {
-			return Post::where('project_id', request()->project_id)->orderBy('created_at', 'desc')->get();
-		}
-		//Retorna todos os posts de um projeto
-		return Post::orderBy('created_at', 'desc')->get();
+	public function index(ListPostsRequest $request) {
+		$posts = Post::where('project_id', $request->project_id)->orderBy('created_at', 'desc')->paginate();
+
+		return PostResource::collection($posts);
 	}
 
 	/**
@@ -26,14 +26,14 @@ class PostController extends Controller {
 
 		$post->tags()->sync($request->tags);
 
-		return $post;
+		return new PostResource($post);
 	}
 
 	/**
 	 * Display the specified resource.
 	 */
 	public function show(Post $post) {
-		return $post;
+		return new PostResource($post);
 	}
 
 	/**
@@ -42,7 +42,7 @@ class PostController extends Controller {
 	public function update(UpdatePostRequest $request, Post $post) {
 		$post->update($request->all());
 
-		return $post;
+		return new PostResource($post);
 	}
 
 	/**
