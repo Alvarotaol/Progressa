@@ -31,17 +31,19 @@
 				<ul class="space-y-2">
 					<li v-for="project in projects" :key="project.id">
 						<router-link
-							class="hover:text-indigo-500 block px-2 py-1 border-l-4 border-transparent hover:border-indigo-500"
+							class="hover:text-indigo-500 hover:border-indigo-500 block px-2 py-1 border-l-4 border-transparent"
 							:to="{ name: 'posts', params: { project_id: project.id } }">{{ project.name
 							}}</router-link>
 					</li>
 				</ul>
-				<button class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
+				<button tag="button"
+					class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
+					@click="$router.push({ name: 'projects' })">
 					+ Novo Projeto
 				</button>
 			</aside>
 
-			<router-view :key="$route.fullPath" class="margin-bottom"></router-view>
+			<router-view :key="$route.fullPath" class="margin-bottom" @update="fetchProjects"></router-view>
 		</div>
 	</div>
 </template>
@@ -50,11 +52,11 @@
 import AppLogo from '@/components/AppLogo.vue';
 import { Model, request } from '@/lib/http';
 import { onMounted, ref } from 'vue';
-import { Project } from '@/types';
+import { ProjectListItem } from '@/types';
 import storage from '@/lib/storage';
 
 const open = ref(false);
-const projects = ref<Project[]>([]);
+const projects = ref<ProjectListItem[]>([]);
 const projectsModel = new Model('projects');
 
 const toggleDropdown = () => {

@@ -22,4 +22,10 @@ class StoreProjectRequest extends FormRequest {
 			//
 		];
 	}
+
+	protected function prepareForValidation() {
+		$this->merge([
+			"user_id" => auth()->user()->id
+		]);
+	}
 }

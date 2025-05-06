@@ -12,10 +12,10 @@ class PostController extends Controller {
 	 */
 	public function index() {
 		if (request()->project_id) {
-			return Post::where('project_id', request()->project_id)->get();
+			return Post::where('project_id', request()->project_id)->orderBy('created_at', 'desc')->get();
 		}
 		//Retorna todos os posts de um projeto
-		return Post::all();
+		return Post::orderBy('created_at', 'desc')->get();
 	}
 
 	/**
@@ -23,6 +23,8 @@ class PostController extends Controller {
 	 */
 	public function store(StorePostRequest $request) {
 		$post = Post::create($request->all());
+
+		$post->tags()->sync($request->tags);
 
 		return $post;
 	}

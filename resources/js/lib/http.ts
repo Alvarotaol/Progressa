@@ -87,7 +87,7 @@ class Model {
 		return apiRequester.get(`${this.route}${model_id}/`, this.config);
 	}
 
-	update(model: any, id = null) {
+	update(model: any, id:ModelId|null = null) {
 		let model_id = id ? id : model.id;
 		if (model instanceof FormData) {
 			model.append("_method", "PUT");
