@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePostRequest extends FormRequest {
 	/**
@@ -19,7 +20,17 @@ class StorePostRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			//
+			"content" => ["required", "string", "max:255"],
+			"project_id" => ["required", Rule::exists('projects', 'id')->where('user_id', request()->user()->id)],
+			"tags.*" => [ Rule::exists('tags', 'id')->where('project_id', request()->project_id)],
 		];
+	}
+
+	protected function prepareForValidation() {
+		$tag_ids = collect($this->tags)->pluck('id')->toArray();
+
+		$this->merge([
+			"tags" => $tag_ids,
+		]);
 	}
 }

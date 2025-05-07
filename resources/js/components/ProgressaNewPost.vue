@@ -32,18 +32,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { Model } from '@/lib/http';
+import { useRoute } from 'vue-router';
+import { Tag } from '@/types';
 
 const content = ref('')
 const selectedTags = ref<{ label: string; color: string }[]>([])
-
-const availableTags = [
-	{ label: 'Bug', color: '#F8B4B4' },
-	{ label: 'Feature', color: '#A7F3D0' },
-	{ label: 'Refactor', color: '#BFDBFE' },
-	{ label: 'Discussão', color: '#FEF3C7' },
-	{ label: 'Urgente', color: '#FBCFE8' }
-]
+const tagsModel = new Model('tags');
+const availableTags = ref<Tag[]>([]);
+const route = useRoute();
+const project_id = route.params.project_id as string;
 
 const emit = defineEmits<{
 	(e: 'submit', value: { content: string; tags: { label: string; color: string }[] }): void
@@ -58,6 +57,12 @@ function toggleTag(tag: { label: string; color: string }) {
 	}
 }
 
+function fetchTags() {
+	tagsModel.list({ project_id }).then(response => {
+		availableTags.value = response.data;
+	})
+}
+
 function submit() {
 	if (!content.value.trim()) return
 	emit('submit', {
@@ -67,4 +72,8 @@ function submit() {
 	content.value = ''
 	selectedTags.value = []
 }
+
+onMounted(() => {
+	fetchTags();
+})
 </script>

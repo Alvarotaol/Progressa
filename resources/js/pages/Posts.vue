@@ -22,6 +22,10 @@
 
 			<ProgressaNewPost @submit="handleNewPost" />
 			<ProgressaPost :post="post" v-for="post in posts" :key="post.id" />
+			<div ref="scrollSentinel" class="h-12 flex items-center justify-center text-sm text-gray-400">
+				<span v-if="loading">Carregando mais...</span>
+				<span v-if="currentPage === lastPage">Não há mais posts</span>
+			</div>
 		</div>
 		<!-- Calendário -->
 		<div class="hidden md:block w-1/3">
@@ -36,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted, watch } from 'vue';
 import ProgressaPost from '@/components/ProgressaPost.vue';
 import ProgressaNewPost from '@/components/ProgressaNewPost.vue';
 import { Model } from '@/lib/http';
@@ -48,27 +52,38 @@ const postsModel = new Model('posts');
 const projectsModel = new Model('projects');
 
 const posts = ref<Post[]>([]);
-const project_id = $route.params.project_id as string;
+//const project_id = $route.params.project_id as string;
+const { project_id } = defineProps<{ project_id: string }>();
 const project = ref<Project>({ id: '', name: 'Projeto' } as Project);
+
+const currentPage = ref(0);
+const lastPage = ref(1);
+const loading = ref(false);
+
+const scrollSentinel = ref<HTMLElement | null>(null);
+let observer: IntersectionObserver;
 
 //Methods
 const handleNewPost = function ({ content, tags }: { content: string; tags: any[] }) {
-	posts.value.unshift({
-		id: Date.now(),
-		content,
-		tags,
-		project_id: project_id,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	})
-	postsModel.create({ content, project_id, tags });
+
+	postsModel.create({ content, project_id, tags }).then((response) => {
+		posts.value.unshift(response.data);
+	}).catch((error) => {
+		console.error(error);
+	});
 }
 
-const fetchPosts = () => {
-	if (!$route.params.project_id) return;
-	postsModel.list({ project_id }).then((response) => {
-		posts.value = response.data.data;
-	}); //TODO: catch
+const fetchPosts = (page = 1) => {
+	if (!project_id || loading.value || (page > lastPage.value)) return;
+	postsModel.list({ project_id, page }).then((response) => {
+		posts.value.push(...response.data.data);
+		currentPage.value = response.data.meta.current_page;
+		lastPage.value = response.data.meta.last_page;
+	}).catch((error) => {
+		//
+	}).finally(() => {
+		loading.value = false;
+	})
 }
 
 const fetchProject = () => {
@@ -85,10 +100,26 @@ const copyLink = () => {
 		alert('Link copiado!');
 	});
 };
+const initObserver = () => {
+	observer = new IntersectionObserver(([entry]) => {
+		if (entry.isIntersecting && currentPage.value < lastPage.value) {
+			fetchPosts(currentPage.value + 1);
+		}
+	});
+
+	if (scrollSentinel.value) {
+		observer.observe(scrollSentinel.value);
+	}
+};
 
 onMounted(() => {
-	fetchPosts();
 	fetchProject();
+	//fetchPosts();
+	initObserver();
+});
+
+onUnmounted(() => {
+	observer.disconnect();
 });
 
 </script>

@@ -26,7 +26,7 @@
 		<!-- Conteúdo principal -->
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Sidebar esquerda -->
-			<aside class="bg-gray-100 w-64 p-4 overflow-y-auto hidden md:block border-r">
+			<aside class="bg-gray-100 w-64 p-4 hidden md:block border-r">
 				<h2 class="text-md font-semibold mb-4">Projetos</h2>
 				<ul class="space-y-2">
 					<li v-for="project in projects" :key="project.id">
@@ -43,7 +43,7 @@
 				</button>
 			</aside>
 
-			<router-view :key="$route.fullPath" class="margin-bottom" @update="fetchProjects"></router-view>
+			<router-view :key="$route.fullPath" class="overflow-y-auto" @update="fetchProjects"></router-view>
 		</div>
 	</div>
 </template>

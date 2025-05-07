@@ -17,8 +17,8 @@ const routes = [
       { path: '/projects/:project_id/edit', name: 'project.edit', component: ProjectForm, props: true, },
     ]
   },
+  { path: '/login', name: 'login', component: Login, },
   //{ path: '/', name: 'home', component: Home, },
-  //{ path: '/login', name: 'login', component: Login, },
   //{ path: '/dashboard', name: 'dashboard', component: Posts, },
   //{ path: '/posts/:project_id', name: 'posts', component: Posts, },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: Home, },
