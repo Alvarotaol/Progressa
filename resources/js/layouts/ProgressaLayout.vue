@@ -38,12 +38,12 @@
 				</ul>
 				<button tag="button"
 					class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
-					@click="$router.push({ name: 'projects' })">
+					@click="$router.push({ name: 'project.create' })">
 					+ Novo Projeto
 				</button>
 			</aside>
 
-			<router-view :key="$route.fullPath" class="overflow-y-auto" @update="fetchProjects"></router-view>
+			<router-view :key="$route.fullPath" @update="fetchProjects"></router-view>
 		</div>
 	</div>
 </template>

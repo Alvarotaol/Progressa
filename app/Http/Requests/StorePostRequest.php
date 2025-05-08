@@ -20,7 +20,7 @@ class StorePostRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			"content" => ["required", "string", "max:255"],
+			"content" => ["required", "string"],
 			"project_id" => ["required", Rule::exists('projects', 'id')->where('user_id', request()->user()->id)],
 			"tags.*" => [ Rule::exists('tags', 'id')->where('project_id', request()->project_id)],
 		];

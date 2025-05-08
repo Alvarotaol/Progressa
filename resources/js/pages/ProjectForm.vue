@@ -1,5 +1,5 @@
 <template>
-	<div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
+	<div class="max-w-3xl w-full mx-auto p-6 bg-white rounded-xl shadow space-y-6">
 		<h1 class="text-2xl font-bold">
 			{{ isEdit ? 'Editar Projeto' : 'Criar Novo Projeto' }}
 		</h1>
@@ -67,11 +67,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { Model } from '@/lib/http';
 import { ModelId, Project, Tag } from '@/types';
 
-const route = useRoute();
 const router = useRouter();
 
-const isEdit = computed(() => !!route.params.project_id);
-const project_id = route.params.project_id as string;
+
+interface Props {
+	project_id?: ModelId;
+}
+
+const { project_id } = defineProps<Props>();
+
+const isEdit = computed(() => !!project_id);
 
 const form = ref<Partial<Project>>({
 	name: '',
@@ -90,11 +95,9 @@ const tagModel = new Model('tags');
 
 // Carrega projeto e tags no modo edição
 onMounted(async () => {
-	if (isEdit.value) {
+	if (project_id) {
 		const projectRes = await projectsModel.get(project_id);
 		form.value = projectRes.data;
-
-		//const tagsRes = await tagModel.list({ project_id });
 
 		tags.value = projectRes.data.tags;
 	}

@@ -1,12 +1,12 @@
 <template>
 	<div class="flex max-w-6xl w-full mx-auto p-4 gap-6">
 		<!-- Feed de posts -->
-		<div class="w-full md:w-2/3">
+		<div class="w-full md:w-2/3 overflow-y-auto">
 			<div class="flex justify-between items-center mb-6">
 				<h1 class="text-2xl font-bold">{{ project.name }}</h1>
 				<div class="flex gap-2">
 					<router-link
-						:to="{ name: 'project.edit', params: { id: project.id } }"
+						:to="{ name: 'project.edit', params: { project_id: project.id || 'new' } }"
 						class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700"
 					>
 						Editar projeto
@@ -20,8 +20,8 @@
 				</div>
 			</div>
 
-			<ProgressaNewPost @submit="handleNewPost" />
-			<ProgressaPost :post="post" v-for="post in posts" :key="post.id" />
+			<ProgressaNewPost :tags="project.tags || []" @submit="handleNewPost" />
+			<ProgressaPost :post="post" :tags="project.tags || []" v-for="post in posts" :key="post.id" @delete="handleDeletePost" @edit="handleEditPost" @toggleHidden="handleToggleHiddenPost" />
 			<div ref="scrollSentinel" class="h-12 flex items-center justify-center text-sm text-gray-400">
 				<span v-if="loading">Carregando mais...</span>
 				<span v-if="currentPage === lastPage">Não há mais posts</span>
@@ -44,7 +44,7 @@ import { onMounted, ref, onUnmounted, watch } from 'vue';
 import ProgressaPost from '@/components/ProgressaPost.vue';
 import ProgressaNewPost from '@/components/ProgressaNewPost.vue';
 import { Model } from '@/lib/http';
-import { Post, Project } from '@/types';
+import { ModelId, Post, Project, Tag } from '@/types';
 import { useRoute } from 'vue-router';
 
 const $route = useRoute();
@@ -65,7 +65,6 @@ let observer: IntersectionObserver;
 
 //Methods
 const handleNewPost = function ({ content, tags }: { content: string; tags: any[] }) {
-
 	postsModel.create({ content, project_id, tags }).then((response) => {
 		posts.value.unshift(response.data);
 	}).catch((error) => {
@@ -91,6 +90,34 @@ const fetchProject = () => {
 	projectsModel.get(project_id).then((response) => {
 		project.value = response.data;
 	}); //TODO: catch
+}
+
+const handleDeletePost = (post: Post) => {
+	postsModel.delete(post.id).then(() => {
+		posts.value = posts.value.filter(p => p.id !== post.id);
+	});
+}
+
+const handleToggleHiddenPost = (post: Post) => {
+	postsModel.update({ is_hidden: !post.is_hidden }, post.id).then((response) => {
+		posts.value = posts.value.map(p => {
+			if (p.id === post.id) {
+				return response.data;
+			}
+			return p;
+		});
+	})
+}
+
+const handleEditPost = ({ id, content, tags }: { id: ModelId; content: string; tags: Tag[] }) => {
+	postsModel.update({ content, tags }, id).then((response) => {
+		posts.value = posts.value.map(p => {
+			if (p.id === id) {
+				return response.data;
+			}
+			return p;
+		});
+	})
 }
 
 const copyLink = () => {

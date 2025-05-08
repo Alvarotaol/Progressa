@@ -1,20 +1,20 @@
 <template>
 	<div class="bg-white rounded-2xl shadow p-4 mb-6">
-		<h2 class="text-lg font-semibold mb-2">Novo post</h2>
+		<h2 class="text-lg font-semibold mb-2" v-if="!is_edit">Novo post</h2>
 		<form @submit.prevent="submit">
 			<textarea v-model="content" rows="3"
 				class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-				placeholder="O que você está fazendo?"></textarea>
+				placeholder="O que você está fazendo?" maxlength="255"></textarea>
 
 			<!-- Tags -->
-			<div class="mt-3">
+			<div class="mt-3" v-if="tags.length > 0">
 				<label class="block text-sm font-medium mb-1">Tags</label>
 				<div class="flex flex-wrap gap-2">
-					<button v-for="tag in availableTags" :key="tag.label" type="button" @click="toggleTag(tag)"
+					<button v-for="tag in toggleableTags" :key="tag.label" type="button" @click="tag.selected = !tag.selected"
 						class="px-3 py-1 text-xs rounded-full border transition" :style="{
-							backgroundColor: selectedTags.includes(tag) ? tag.color : '#fff',
+							backgroundColor: tag.selected ? tag.color : '#fff',
 							borderColor: '#00000055',
-							color: selectedTags.includes(tag) ? '#000' : '#444'
+							color: tag.selected ? '#000' : '#444'
 						}">
 						{{ tag.label }}
 					</button>
@@ -22,9 +22,11 @@
 			</div>
 
 			<div class="flex justify-end mt-4">
+				<button type="button" @click="$emit('cancel')" v-if="is_edit"
+					class="text-gray-500 hover:text-gray-700 px-4 py-2 mr-2 rounded-lg border border-gray-300">Cancelar</button>
 				<button type="submit"
 					class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-					Postar
+					{{ is_edit ? 'Salvar alterações' : 'Publicar' }}
 				</button>
 			</div>
 		</form>
@@ -32,48 +34,51 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { Model } from '@/lib/http';
-import { useRoute } from 'vue-router';
-import { Tag } from '@/types';
+import { computed, onMounted, ref, watch } from 'vue'
+import { Post, Tag } from '@/types';
+
+interface Props {
+	post?: Post,
+	tags: Tag[],
+}
+interface ToggleableTag extends Tag {
+	selected: boolean
+}
+
+const is_edit = computed(() => !!post)
+const { post, tags } = defineProps<Props>();
 
 const content = ref('')
-const selectedTags = ref<{ label: string; color: string }[]>([])
-const tagsModel = new Model('tags');
-const availableTags = ref<Tag[]>([]);
-const route = useRoute();
-const project_id = route.params.project_id as string;
+const toggleableTags = ref<ToggleableTag[]>([])
 
 const emit = defineEmits<{
-	(e: 'submit', value: { content: string; tags: { label: string; color: string }[] }): void
+	(e: 'submit', value: { content: string; tags: Tag[] }): void,
+	(e: 'cancel'): void
 }>()
-
-function toggleTag(tag: { label: string; color: string }) {
-	const index = selectedTags.value.findIndex(t => t.label === tag.label)
-	if (index >= 0) {
-		selectedTags.value.splice(index, 1)
-	} else {
-		selectedTags.value.push(tag)
-	}
-}
-
-function fetchTags() {
-	tagsModel.list({ project_id }).then(response => {
-		availableTags.value = response.data;
-	})
-}
 
 function submit() {
 	if (!content.value.trim()) return
+	const selectedTags = toggleableTags.value.filter(t => t.selected)
 	emit('submit', {
-		content: content.value,
-		tags: selectedTags.value
+		content: content.value.trim(),
+		tags: selectedTags,
 	})
-	content.value = ''
-	selectedTags.value = []
+	content.value = '';
+	toggleableTags.value.forEach(t => t.selected = false);
 }
 
-onMounted(() => {
-	fetchTags();
-})
+const init = function() {
+	toggleableTags.value = tags.map(tag => ({ ...tag, selected: false }));
+	if(post) {
+		content.value = post.content;
+		post.tags.forEach(tag => {
+			const index = toggleableTags.value.findIndex(t => t.label === tag.label)
+			if (index >= 0) {
+				toggleableTags.value[index].selected = true
+			}
+		});
+	}
+}
+watch(() => tags, init);
+onMounted(init);
 </script>

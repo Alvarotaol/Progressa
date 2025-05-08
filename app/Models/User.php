@@ -8,7 +8,11 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable {
-    use HasApiTokens, Notifiable, HasFactory;
+	use HasApiTokens, Notifiable, HasFactory;
 
-    protected $fillable = ['name', 'email', 'avatar'];
+	protected $fillable = ['name', 'email', 'avatar'];
+
+	public function projects() {
+		return $this->hasMany(Project::class);
+	}
 }

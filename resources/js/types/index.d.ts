@@ -44,6 +44,7 @@ export interface Post {
     id: ModelId;
     content: string;
     project_id: ModelId;
+    is_hidden?: boolean;
     tags: Tag[];
     created_at: string;
     updated_at: string;

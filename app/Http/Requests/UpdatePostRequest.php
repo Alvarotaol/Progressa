@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePostRequest extends FormRequest {
 	/**
@@ -19,7 +20,21 @@ class UpdatePostRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			//
+			"is_hidden" => ["boolean"],
+			"content" => ["string"],
+			"tags.*" => [ Rule::exists('tags', 'id')->where('project_id', request()->project_id)],
 		];
+	}
+
+	protected function prepareForValidation() {
+		if(!isset($this->tags)) {
+			return;
+		}
+		$tag_ids = collect($this->tags)->pluck('id')->toArray();
+
+		$this->merge([
+			"tags" => $tag_ids,
+			"project_id" => request()->post->project_id
+		]);
 	}
 }

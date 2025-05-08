@@ -15,12 +15,11 @@ class ProjectFactory extends Factory {
 	 */
 	public function definition(): array {
 		return [
-			"user_id" => 1,
-			"name" => "Projeto " . $this->faker->randomNumber(2),
-			"public_slug" => "/projeto-" . $this->faker->randomNumber(2) . "u-1-" . $this->faker->randomNumber(2),
-			"is_public" => $this->faker->boolean(),
-			"is_active" => $this->faker->boolean(),
-			"description" => $this->faker->text(),
+			'name' => $this->faker->words(3, true),
+			'description' => $this->faker->sentence,
+			'is_active' => true,
+			'is_public' => false,
+			'user_id' => \App\Models\User::factory(),
 			"created_at" => now(),
 			"updated_at" => now(),
 		];

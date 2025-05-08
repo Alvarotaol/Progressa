@@ -15,10 +15,9 @@ class PostFactory extends Factory {
 	 * @return array<string, mixed>
 	 */
 	public function definition(): array {
-		$projects = Project::all();
 		return [
-			"content" => $this->faker->text(),
-			"project_id" => $projects->random()->id, //Random project
+			"content" => $this->faker->paragraph(2),
+			"project_id" => Project::factory(),
 			"is_hidden" => $this->faker->boolean(),
 			"created_at" => now(),
 			"updated_at" => now(),

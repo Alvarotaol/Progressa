@@ -26,10 +26,4 @@ class StoreProjectRequest extends FormRequest {
 			"is_active" => ["boolean"],
 		];
 	}
-
-	protected function prepareForValidation() {
-		$this->merge([
-			"user_id" => request()->user()->id
-		]);
-	}
 }

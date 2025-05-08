@@ -42,9 +42,35 @@ class GoogleController extends Controller {
 	}
 
 	public function logout(Request $request) {
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
+		//$request->session()->invalidate();
+		//$request->session()->regenerateToken();
 
-		return redirect('/');
+		return response()->noContent();
+	}
+
+	public function fakeRedirect() {
+		return view('fake_google', [
+			'users' => User::all(),
+		]);
+	}
+
+	public function fakeCallback() {
+		if(request('user_id') == "new") {
+			$user = User::create([
+				'name' => request('name'),
+				'email' => request('email'),
+				'avatar' => "/favicon.svg",
+			]);
+		} else {
+			$user = User::find(request('user_id'));
+			$user->avatar = "/favicon.svg";
+			$user->save();
+		}
+
+		$token = $user->createToken($user->name . '-AuthToken')->accessToken;
+		return response()->view('auth_callback', [
+			'token' => $token,
+			'user' => $user,
+		]);
 	}
 }

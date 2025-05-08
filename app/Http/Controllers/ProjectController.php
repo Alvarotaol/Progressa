@@ -21,7 +21,7 @@ class ProjectController extends Controller {
 	 * Store a newly created resource in storage.
 	 */
 	public function store(StoreProjectRequest $request) {
-		$project = Project::create($request->all());
+		$project = $request->user()->projects()->create($request->all());
 
 		return new ProjectResource($project);
 	}
@@ -30,6 +30,9 @@ class ProjectController extends Controller {
 	 * Display the specified resource.
 	 */
 	public function show(Project $project) {
+		if(request()->user()->id != $project->user_id) {
+			return response()->json(['message' => 'Unauthorized'], 403);
+		}
 		return new ProjectResource($project);
 	}
 
@@ -37,6 +40,10 @@ class ProjectController extends Controller {
 	 * Update the specified resource in storage.
 	 */
 	public function update(UpdateProjectRequest $request, Project $project) {
+		if(request()->user()->id != $project->user_id) {
+			return response()->json(['message' => 'Unauthorized'], 403);
+		}
+
 		$project->update($request->all());
 
 		return new ProjectResource($project);
@@ -46,8 +53,10 @@ class ProjectController extends Controller {
 	 * Remove the specified resource from storage.
 	 */
 	public function destroy(Project $project) {
+		if(request()->user()->id != $project->user_id) {
+			return response()->json(['message' => 'Unauthorized'], 403);
+		}
 		$project->delete();
-
 		return response()->noContent();
 	}
 }
