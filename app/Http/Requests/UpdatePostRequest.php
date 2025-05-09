@@ -22,7 +22,7 @@ class UpdatePostRequest extends FormRequest {
 		return [
 			"is_hidden" => ["boolean"],
 			"content" => ["string"],
-			"tags.*" => [Rule::exists('tags', 'id')->where('project_id', request()->project_id)],
+			"tags.*" => [Rule::exists('tags', 'id')->where('project_id', $this->post->project_id)],
 		];
 	}
 

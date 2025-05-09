@@ -44,8 +44,8 @@ class PostController extends Controller {
 	 * Display the specified resource.
 	 */
 	public function show(Post $post) {
-		if (request()->user()->id != $post->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
+		if (request()->user()->id != $post->project->user_id) {
+			throw new NotFoundHttpException('Post not found');
 		}
 		return new PostResource($post);
 	}

@@ -78,17 +78,6 @@ class PostControllerTest extends TestCase {
 			->assertJsonFragment(['content' => 'Atualizado']);
 	}
 
-	public function test_user_cannot_update_post_from_another_user() {
-		$project = Project::factory()->for($this->otherUser)->create();
-		$post = Post::factory()->for($project)->create();
-
-		$response = $this->putJson(route('posts.update', $post), [
-			'content' => 'Hackeando',
-		]);
-
-		$response->assertNotFound();
-	}
-
 	public function test_user_can_delete_own_post() {
 		$project = Project::factory()->for($this->user)->create();
 		$post = Post::factory()->for($project)->create();
@@ -98,13 +87,16 @@ class PostControllerTest extends TestCase {
 		$response->assertNoContent();
 	}
 
-	public function test_user_cannot_delete_post_from_another_user() {
-		$project = Project::factory()->for($this->otherUser)->create();
-		$post = Post::factory()->for($project)->create();
+	public function test_user_cannot_access_others_posts(): void {
+		$otherUser = User::factory()->create();
+		$otherProject = Project::factory()->for($otherUser)->create();
+		$post = Post::factory()->for($otherProject)->create();
 
-		$response = $this->deleteJson(route('posts.destroy', $post));
+		$this->getJson(route('posts.show', [$post]))->assertNotFound();
 
-		$response->assertNotFound();
+		$this->putJson(route('posts.update', [$post]), ['content' => 'X'])->assertNotFound();
+
+		$this->deleteJson(route('posts.destroy', [$post]))->assertNotFound();
 	}
 
 	public function test_validation_fails_when_creating_post_with_invalid_data() {
@@ -114,5 +106,17 @@ class PostControllerTest extends TestCase {
 		]);
 
 		$response->assertUnprocessable()->assertJsonValidationErrors(['content', 'project_id']);
+	}
+
+	public function test_validation_fails_when_updating_post_with_invalid_data() {
+		$project = Project::factory()->for($this->user)->create();
+		$post = Post::factory()->for($project)->create();
+
+		$response = $this->putJson(route('posts.update', $post), [
+			'content' => '',
+			'project_id' => null,
+		]);
+
+		$response->assertUnprocessable()->assertJsonValidationErrors(['content']);
 	}
 }
