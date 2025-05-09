@@ -7,25 +7,24 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Models\Project;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PostController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
 	public function index(ListPostsRequest $request) {
-		if($request->user()->projects()->where('id', $request->project_id)->doesntExist()) {
+		if ($request->user()->projects()->where('id', $request->project_id)->doesntExist()) {
 			return response()->json(['message' => 'Unauthorized'], 403);
 		}
-		//DB::enableQueryLog();
-		$posts = Post::
-			where('project_id', $request->project_id)
+		$posts = Post::where('project_id', $request->project_id)
 			->with('tags', function ($query) {
 				$query->orderBy('tags.id');
 			})
 			->orderBy('created_at', 'desc')->paginate();
 
-		//dd(DB::getQueryLog());
 		return PostResource::collection($posts);
 	}
 
@@ -33,7 +32,8 @@ class PostController extends Controller {
 	 * Store a newly created resource in storage.
 	 */
 	public function store(StorePostRequest $request) {
-		$post = Post::create($request->all());
+		$project = Project::find($request->project_id);
+		$post = $project->posts()->create($request->all());
 
 		$post->tags()->sync($request->tags);
 
@@ -44,7 +44,7 @@ class PostController extends Controller {
 	 * Display the specified resource.
 	 */
 	public function show(Post $post) {
-		if(request()->user()->id != $post->user_id) {
+		if (request()->user()->id != $post->user_id) {
 			return response()->json(['message' => 'Unauthorized'], 403);
 		}
 		return new PostResource($post);
@@ -54,11 +54,11 @@ class PostController extends Controller {
 	 * Update the specified resource in storage.
 	 */
 	public function update(UpdatePostRequest $request, Post $post) {
-		if($request->user()->id != $post->project->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
+		if ($request->user()->id != $post->project->user_id) {
+			throw new NotFoundHttpException('Post not found');
 		}
 		$post->update($request->all());
-		if(isset($request->tags))
+		if (isset($request->tags))
 			$post->tags()->sync($request->tags);
 
 		return new PostResource($post);
@@ -68,12 +68,11 @@ class PostController extends Controller {
 	 * Remove the specified resource from storage.
 	 */
 	public function destroy(Post $post) {
-		if(request()->user()->id != $post->project->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
+		if (request()->user()->id != $post->project->user_id) {
+			throw new NotFoundHttpException('Post not found');
 		}
 		$post->delete();
 
 		return response()->noContent();
 	}
-
 }

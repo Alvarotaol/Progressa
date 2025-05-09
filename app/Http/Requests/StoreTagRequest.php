@@ -20,9 +20,16 @@ class StoreTagRequest extends FormRequest {
 	 */
 	public function rules(): array {
 		return [
-			"label" => ["required", "string", "max:31"],
+			"label" => ["required", "string", "max:31", Rule::unique('tags', 'label')->where('project_id', request()->project_id)],
 			"color" => ["required", "string", "max:7", "regex:/^#([A-Fa-f0-9]{6})$/"],
 			"project_id" => ["required", Rule::exists('projects', 'id')->where('user_id', request()->user()->id)],
+		];
+	}
+
+	public function messages() {
+		return [
+			"project_id.exists" => "Esse projeto não existe",
+			"project_id.required" => "É necessário informar um projeto",
 		];
 	}
 }

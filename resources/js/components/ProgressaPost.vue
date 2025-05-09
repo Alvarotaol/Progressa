@@ -1,5 +1,6 @@
 <template>
-	<div class="bg-white rounded-2xl shadow p-4 mb-4 relative transition-opacity" :class="{'opacity-50': post.is_hidden }" v-if="!isEditing">
+	<div class="bg-white rounded-2xl shadow p-4 mb-4 relative transition-opacity"
+		:class="{ 'opacity-50': post.is_hidden }" v-if="!isEditing">
 		<!-- Botões de ação -->
 		<div class="absolute top-2 right-2 flex gap-2 text-gray-500 text-sm">
 			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true">✏️</button>
@@ -23,9 +24,9 @@
 
 <script setup lang="ts">
 import { ModelId, Post, Tag } from '@/types';
-import ProgressaTag from './ProgressaTag.vue';
-import ProgressaNewPost from './ProgressaNewPost.vue';
 import { ref } from 'vue';
+import ProgressaNewPost from './ProgressaNewPost.vue';
+import ProgressaTag from './ProgressaTag.vue';
 
 
 interface Props {

@@ -55,7 +55,7 @@ class GoogleController extends Controller {
 	}
 
 	public function fakeCallback() {
-		if(request('user_id') == "new") {
+		if (request('user_id') == "new") {
 			$user = User::create([
 				'name' => request('name'),
 				'email' => request('email'),
@@ -69,6 +69,15 @@ class GoogleController extends Controller {
 
 		$token = $user->createToken($user->name . '-AuthToken')->accessToken;
 		return response()->view('auth_callback', [
+			'token' => $token,
+			'user' => $user,
+		]);
+	}
+
+	public function login() {
+		$user = User::find(request('user_id'));
+		$token = $user->createToken($user->name . '-AuthToken')->accessToken;
+		return response()->json([
 			'token' => $token,
 			'user' => $user,
 		]);

@@ -8,22 +8,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
-class ProjectControllerTest extends TestCase
-{
+class ProjectControllerTest extends TestCase {
 	use RefreshDatabase;
 
 	private User $user, $otherUser;
 
-	protected function setUp(): void
-	{
+	protected function setUp(): void {
 		parent::setUp();
 		$this->user = User::factory()->create();
 		$this->otherUser = User::factory()->create();
 		Passport::actingAs($this->user);
 	}
 
-	public function test_can_list_projects()
-	{
+	public function test_can_list_projects() {
 		Project::factory()->count(3)->create(['user_id' => $this->user->id]);
 
 		$response = $this->getJson(route('projects.index'));
@@ -32,8 +29,7 @@ class ProjectControllerTest extends TestCase
 		$response->assertJsonCount(3);
 	}
 
-	public function test_can_create_project()
-	{
+	public function test_can_create_project() {
 		$data = [
 			'name' => 'Meu Projeto',
 			'description' => 'Teste de criação',
@@ -48,20 +44,18 @@ class ProjectControllerTest extends TestCase
 		]);
 	}
 
-	public function test_cannot_create_project_without_name()
-	{
+	public function test_cannot_create_project_without_name() {
 		$response = $this->postJson(route('projects.store'), [
 			'description' => 'Sem nome'
 		]);
 
-		$response->assertStatus(422);
+		$response->assertUnprocessable()->assertJsonValidationErrors(['name']);
 	}
 
-	public function test_can_update_own_project()
-	{
+	public function test_can_update_own_project() {
 		$project = Project::factory()->create(['user_id' => $this->user->id]);
 
-		$response = $this->putJson(route('projects.update', ['project' => $project->id]), [
+		$response = $this->putJson(route('projects.update', [$project]), [
 			'name' => 'Atualizado'
 		]);
 
@@ -72,19 +66,17 @@ class ProjectControllerTest extends TestCase
 		]);
 	}
 
-	public function test_cannot_update_other_user_project()
-	{
-		$otherProject = Project::factory()->create(['user_id' => $this->otherUser->id]);
+	public function test_cannot_update_other_user_project() {
+		$otherProject = Project::factory()->for($this->otherUser)->create();
 
-		$response = $this->putJson(route('projects.update', ['project' => $otherProject->id]), [
+		$response = $this->putJson(route('projects.update', [$otherProject]), [
 			'name' => 'Hackeado'
 		]);
 
-		$response->assertStatus(403);
+		$response->assertNotFound();
 	}
 
-	public function test_can_delete_own_project()
-	{
+	public function test_can_delete_own_project() {
 		$project = Project::factory()->create(['user_id' => $this->user->id]);
 
 		$response = $this->deleteJson(route('projects.destroy', ['project' => $project->id]));
@@ -93,24 +85,21 @@ class ProjectControllerTest extends TestCase
 		$this->assertDatabaseMissing('projects', ['id' => $project->id]);
 	}
 
-	public function test_cannot_delete_other_user_project()
-	{
+	public function test_cannot_delete_other_user_project() {
 		$project = Project::factory()->create(['user_id' => $this->otherUser->id]);
 
 		$response = $this->deleteJson(route('projects.destroy', ['project' => $project->id]));
 
-		$response->assertStatus(403);
+		$response->assertNotFound();
 	}
 
-	public function test_cannot_show_nonexistent_project()
-	{
+	public function test_cannot_show_nonexistent_project() {
 		$response = $this->getJson(route('projects.show', ['project' => 999]));
 
 		$response->assertNotFound();
 	}
 
-	public function test_can_show_own_project()
-	{
+	public function test_can_show_own_project() {
 		$project = Project::factory()->create(['user_id' => $this->user->id]);
 
 		$response = $this->getJson(route('projects.show', ['project' => $project->id]));

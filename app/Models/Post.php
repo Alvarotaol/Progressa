@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model {
 	use HasFactory;
 
-	protected $guarded = ["id"];
+	protected $fillable = [
+		"content",
+		"is_hidden",
+	];
 
 	public function project() {
 		return $this->belongsTo(Project::class);

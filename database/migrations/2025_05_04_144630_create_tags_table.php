@@ -15,6 +15,7 @@ return new class extends Migration {
 			$table->string('color', 7);
 			$table->foreignId('project_id');
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
+			$table->unique(['label', 'project_id']);
 			$table->timestamps();
 		});
 	}

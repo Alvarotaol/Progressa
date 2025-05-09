@@ -3,13 +3,18 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UpdateProjectRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
 	public function authorize(): bool {
-		return true;
+		return $this->user()->id == $this->project->user_id;
+	}
+
+	public function failedAuthorization() {
+		throw new NotFoundHttpException('Project not found');
 	}
 
 	/**

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProjectController extends Controller {
 	/**
@@ -30,8 +31,8 @@ class ProjectController extends Controller {
 	 * Display the specified resource.
 	 */
 	public function show(Project $project) {
-		if(request()->user()->id != $project->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
+		if (request()->user()->id != $project->user_id) {
+			throw new NotFoundHttpException('Project not found');
 		}
 		return new ProjectResource($project);
 	}
@@ -40,10 +41,6 @@ class ProjectController extends Controller {
 	 * Update the specified resource in storage.
 	 */
 	public function update(UpdateProjectRequest $request, Project $project) {
-		if(request()->user()->id != $project->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
-		}
-
 		$project->update($request->all());
 
 		return new ProjectResource($project);
@@ -53,8 +50,8 @@ class ProjectController extends Controller {
 	 * Remove the specified resource from storage.
 	 */
 	public function destroy(Project $project) {
-		if(request()->user()->id != $project->user_id) {
-			return response()->json(['message' => 'Unauthorized'], 403);
+		if (request()->user()->id != $project->user_id) {
+			throw new NotFoundHttpException('Project not found');
 		}
 		$project->delete();
 		return response()->noContent();

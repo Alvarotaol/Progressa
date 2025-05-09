@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model {
 	use HasFactory;
 
-	protected $guarded = ["id"];
+	protected $fillable = ['color', 'label'];
 
 	public function posts() {
 		return $this->belongsToMany(Post::class);
