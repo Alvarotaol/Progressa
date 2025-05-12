@@ -5,20 +5,24 @@
 			<div class="flex justify-between items-center mb-6">
 				<h1 class="text-2xl font-bold">{{ project.name }}</h1>
 				<div class="flex gap-2">
-					<router-link :to="{ name: 'project.edit', params: { project_id: project.id || 'new' } }"
+					<router-link
+						:to="{ name: 'project.edit', params: { project_id: project.id || 'new' } }"
 						class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700">
 						Editar projeto
 					</router-link>
-					<button @click="copyLink"
-						class="text-sm bg-gray-100 text-gray-700 px-3 py-1.5 rounded border hover:bg-gray-200">
-						Obter link público
-					</button>
+					<button @click="copyLink" class="text-sm bg-gray-100 text-gray-700 px-3 py-1.5 rounded border hover:bg-gray-200">Obter link público</button>
 				</div>
 			</div>
 
 			<ProgressaNewPost :tags="project.tags || []" @submit="handleNewPost" />
-			<ProgressaPost :post="post" :tags="project.tags || []" v-for="post in posts" :key="post.id"
-				@delete="handleDeletePost" @edit="handleEditPost" @toggleHidden="handleToggleHiddenPost" />
+			<ProgressaPost
+				:post="post"
+				:tags="project.tags || []"
+				v-for="post in posts"
+				:key="post.id"
+				@delete="handleDeletePost"
+				@edit="handleEditPost"
+				@toggleHidden="handleToggleHiddenPost" />
 			<div ref="scrollSentinel" class="h-12 flex items-center justify-center text-sm text-gray-400">
 				<span v-if="loading">Carregando mais...</span>
 				<span v-if="currentPage === lastPage">Não há mais posts</span>
@@ -28,9 +32,7 @@
 		<div class="hidden md:block w-1/3">
 			<div class="bg-white rounded-2xl shadow p-4">
 				<h2 class="text-lg font-semibold mb-4">Filtrar por data</h2>
-				<div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-					Calendário aqui
-				</div>
+				<div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">Calendário aqui</div>
 			</div>
 		</div>
 	</div>
@@ -59,60 +61,67 @@ let observer: IntersectionObserver;
 
 //Methods
 const handleNewPost = function ({ content, tags }: { content: string; tags: any[] }) {
-	postsModel.create({ content, project_id, tags }).then((response) => {
-		posts.value.unshift(response.data);
-	}).catch((error) => {
-		console.error(error);
-	});
-}
+	postsModel
+		.create({ content, project_id, tags })
+		.then((response) => {
+			posts.value.unshift(response.data);
+		})
+		.catch((error) => {
+			console.error(error);
+		});
+};
 
 const fetchPosts = (page = 1) => {
-	if (!project_id || loading.value || (page > lastPage.value)) return;
-	postsModel.list({ project_id, page }).then((response) => {
-		posts.value.push(...response.data.data);
-		currentPage.value = response.data.meta.current_page;
-		lastPage.value = response.data.meta.last_page;
-	}).catch((error) => {
-		//
-	}).finally(() => {
-		loading.value = false;
-	})
-}
+	if (!project_id || loading.value || page > lastPage.value) return;
+	postsModel
+		.list({ project_id, page })
+		.then((response) => {
+			posts.value.push(...response.data.data);
+			currentPage.value = response.data.meta.current_page;
+			lastPage.value = response.data.meta.last_page;
+		})
+		.catch((_error) => {
+			//
+		})
+		.finally(() => {
+			loading.value = false;
+		});
+};
 
 const fetchProject = () => {
 	if (!$route.params.project_id) return;
 	projectsModel.get(project_id).then((response) => {
 		project.value = response.data;
 	}); //TODO: catch
-}
+};
 
 const handleDeletePost = (post: Post) => {
 	postsModel.delete(post.id).then(() => {
-		posts.value = posts.value.filter(p => p.id !== post.id);
+		posts.value = posts.value.filter((p) => p.id !== post.id);
 	});
-}
+};
 
 const handleToggleHiddenPost = (post: Post) => {
 	postsModel.update({ is_hidden: !post.is_hidden }, post.id).then((response) => {
-		posts.value = posts.value.map(p => {
+		posts.value = posts.value.map((p) => {
 			if (p.id === post.id) {
 				return response.data;
 			}
 			return p;
 		});
-	})
-}
+	});
+};
 
 const handleEditPost = ({ id, content, tags }: { id: ModelId; content: string; tags: Tag[] }) => {
 	postsModel.update({ content, tags }, id).then((response) => {
-		posts.value = posts.value.map(p => {
+		posts.value = posts.value.map((p) => {
 			if (p.id === id) {
 				return response.data;
 			}
 			return p;
 		});
-	})
-}
+	});
+};
 
 const copyLink = () => {
 	if (!project.value.public_slug) return;
@@ -142,5 +151,4 @@ onMounted(() => {
 onUnmounted(() => {
 	observer.disconnect();
 });
-
 </script>

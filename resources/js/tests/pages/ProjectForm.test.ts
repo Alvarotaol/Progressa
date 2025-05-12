@@ -3,8 +3,6 @@ import { mount, shallowMount } from '@vue/test-utils';
 import ProjectForm from '@/pages/ProjectForm.vue';
 const { projectsModel } = await import('@/lib/models');
 
-
-
 describe('ProjectForm.vue', () => {
 	it('envia dados do formulário ao criar projeto', async () => {
 		const wrapper = mount(ProjectForm);
@@ -14,14 +12,14 @@ describe('ProjectForm.vue', () => {
 		await wrapper.get('[data-test="submit-project"]').trigger('click');
 
 		// Aguarda ciclo async
-		await new Promise(resolve => setTimeout(resolve, 0));
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		// Verifica se o método create foi chamado com os dados certos
 		expect(projectsModel.create).toHaveBeenCalledWith({
 			name: 'Meu Projeto',
 			description: 'Descrição top',
 			is_public: false,
-			is_active: true
+			is_active: true,
 		});
 	});
 
@@ -41,14 +39,14 @@ describe('ProjectForm.vue', () => {
 
 		// Dispara o submit
 		await wrapper.get('[data-test="submit-project"]').trigger('click');
-		await new Promise(resolve => setTimeout(resolve, 0));
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(projectsModel.update).toHaveBeenCalledWith(
 			expect.objectContaining({
 				name: 'Novo Nome',
 				description: 'Nova descrição',
 			}),
-			1
+			1,
 		);
 	});
 });

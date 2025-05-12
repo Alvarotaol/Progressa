@@ -20,7 +20,7 @@ const postWithTags: Post = {
 		{ id: 1, label: 'Tag 1', color: '#000000' },
 		{ id: 2, label: 'Tag 2', color: '#FF0000' },
 	],
-}
+};
 
 const tags: Tag[] = [
 	{ id: 1, label: 'Tag 1', color: '#000000' },
@@ -39,16 +39,16 @@ describe('ProgressaPost.vue', () => {
 		const wrapper = mount(ProgressaPost, {
 			props: { post, tags },
 		});
-		post.tags.forEach(tag => {
+		post.tags.forEach((tag) => {
 			expect(wrapper.text()).toContain(tag.label);
 		});
 	});
 
 	it('renderiza as tags do post com tags', () => {
 		const wrapper = mount(ProgressaPost, {
-			props: { post: postWithTags, tags},
+			props: { post: postWithTags, tags },
 		});
-		postWithTags.tags.forEach(tag => {
+		postWithTags.tags.forEach((tag) => {
 			expect(wrapper.text()).toContain(tag.label);
 		});
 	});

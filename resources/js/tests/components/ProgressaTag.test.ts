@@ -6,7 +6,7 @@ describe('ProgressaTag.vue', () => {
 	it('renderiza corretamente com label e cor', () => {
 		const tag = { label: 'Bug', color: '#ff0000' };
 		const wrapper = mount(ProgressaTag, {
-			props: { tag }
+			props: { tag },
 		});
 
 		expect(wrapper.text()).toContain('Bug');

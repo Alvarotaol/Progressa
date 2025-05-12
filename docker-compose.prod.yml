@@ -1,51 +1,50 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile.prod
-    container_name: progressa_app
-    restart: unless-stopped
-    environment:
-      APP_ENV: production
-    volumes:
-      - .:/var/www
-    networks:
-      - progressa_net
+ app:
+  build:
+   context: .
+   dockerfile: docker/php/Dockerfile.prod
+  container_name: progressa_app
+  restart: unless-stopped
+  environment:
+   APP_ENV: production
+  volumes:
+   - .:/var/www
+  networks:
+   - progressa_net
 
-  nginx:
-    image: nginx:latest
-    container_name: progressa_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - .:/var/www
-      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-    networks:
-      - progressa_net
+ nginx:
+  image: nginx:latest
+  container_name: progressa_nginx
+  restart: unless-stopped
+  ports:
+   - '80:80'
+  volumes:
+   - .:/var/www
+   - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf
+  depends_on:
+   - app
+  networks:
+   - progressa_net
 
-  mysql:
-    image: mysql:8.0
-    container_name: progressa_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - progressa_net
+ mysql:
+  image: mysql:8.0
+  container_name: progressa_mysql
+  restart: unless-stopped
+  environment:
+   MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+   MYSQL_DATABASE: ${DB_DATABASE}
+   MYSQL_USER: ${DB_USERNAME}
+   MYSQL_PASSWORD: ${DB_PASSWORD}
+  volumes:
+   - mysql_data:/var/lib/mysql
+  networks:
+   - progressa_net
 
 volumes:
-  mysql_data:
-
+ mysql_data:
 
 networks:
-  progressa_net:
-    driver: bridge
+ progressa_net:
+  driver: bridge

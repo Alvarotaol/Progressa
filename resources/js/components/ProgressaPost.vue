@@ -1,14 +1,12 @@
 <template>
-	<div class="bg-white rounded-2xl shadow p-4 mb-4 relative transition-opacity"
-		:class="{ 'opacity-50': post.is_hidden }" v-if="!isEditing">
+	<div class="bg-white rounded-2xl shadow p-4 mb-4 relative transition-opacity" :class="{ 'opacity-50': post.is_hidden }" v-if="!isEditing">
 		<!-- Botões de ação -->
 		<div class="absolute top-2 right-2 flex gap-2 text-gray-500 text-sm">
-			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true"
-				data-test="edit-post">✏️</button>
-			<button title="Ocultar" class="hover:text-yellow-500" @click="$emit('toggleHidden', post)">{{ post.is_hidden
-				? '👀' : '🙈' }}</button>
-			<button title="Excluir" class="hover:text-red-500" @click="$emit('delete', post)"
-				data-test="delete-post">🗑️</button>
+			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true" data-test="edit-post">✏️</button>
+			<button title="Ocultar" class="hover:text-yellow-500" @click="$emit('toggleHidden', post)">
+				{{ post.is_hidden ? '👀' : '🙈' }}
+			</button>
+			<button title="Excluir" class="hover:text-red-500" @click="$emit('delete', post)" data-test="delete-post">🗑️</button>
 		</div>
 		<!-- Conteúdo do post -->
 		<p class="text-gray-800 my-2">{{ post.content }}</p>
@@ -31,20 +29,18 @@ import { ref } from 'vue';
 import ProgressaNewPost from './ProgressaNewPost.vue';
 import ProgressaTag from './ProgressaTag.vue';
 
-
 interface Props {
-	post: Post,
-	tags: Tag[]
+	post: Post;
+	tags: Tag[];
 }
 
 const { post, tags } = defineProps<Props>();
 const isEditing = ref(false);
 
-
 const $emit = defineEmits<{
-	(e: 'edit', value: { id: ModelId; content: string; tags: Tag[] }): void,
-	(e: 'delete', value: Post): void
-	(e: 'toggleHidden', value: Post): void
+	(e: 'edit', value: { id: ModelId; content: string; tags: Tag[] }): void;
+	(e: 'delete', value: Post): void;
+	(e: 'toggleHidden', value: Post): void;
 }>();
 
 function formatDate(dateString: string) {
@@ -64,5 +60,4 @@ function submit(value: { content: string; tags: Tag[] }) {
 function wasEdited(post: Post) {
 	return post.created_at !== post.updated_at;
 }
-
 </script>

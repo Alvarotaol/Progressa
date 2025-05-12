@@ -1,23 +1,22 @@
-//tsconfig.app.json
 {
 	"compilerOptions": {
-	  "target": "ESNext",
-	  "useDefineForClassFields": true,
-	  "module": "ESNext",
-	  "moduleResolution": "bundler",
-	  "strict": true,
-	  "jsx": "preserve",
-	  "resolveJsonModule": true,
-	  "esModuleInterop": true,
-	  "isolatedModules": true,
-	  "lib": ["ESNext", "DOM"],
-	  "allowJs": true,
-	  "allowSyntheticDefaultImports": true,
-	  "sourceMap": true,
-	  "baseUrl": "./",
-	  "paths": {
-		"@/*": ["resources/js/*"]
-	  },
-	  "types": ["vite/client"]
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"jsx": "preserve",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"lib": ["ESNext", "DOM"],
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"sourceMap": true,
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["resources/js/*"]
+		},
+		"types": ["vite/client"]
 	}
-  }
+}

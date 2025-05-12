@@ -6,18 +6,20 @@ import { vi } from 'vitest';
 config.global.stubs = {};
 
 export const projectsModel = {
-	create: vi.fn().mockResolvedValue({data:{id: 1}}),
-	update: vi.fn().mockResolvedValue({data:{id: 1}}),
+	create: vi.fn().mockResolvedValue({ data: { id: 1 } }),
+	update: vi.fn().mockResolvedValue({ data: { id: 1 } }),
 	delete: vi.fn(),
-	get: vi.fn().mockResolvedValue({data:{
-		id: 1,
-		name: 'Projeto Antigo',
-		description: 'Descrição antiga',
-		is_public: true,
-		is_active: true,
-		public_slug: 'projeto-antigo',
-		tags: [],
-	}}),
+	get: vi.fn().mockResolvedValue({
+		data: {
+			id: 1,
+			name: 'Projeto Antigo',
+			description: 'Descrição antiga',
+			is_public: true,
+			is_active: true,
+			public_slug: 'projeto-antigo',
+			tags: [],
+		},
+	}),
 };
 
 export const tagsModel = {
@@ -32,7 +34,6 @@ export const postsModel = {
 	delete: vi.fn(),
 };
 
-
 vi.mock('@/lib/models', () => ({
 	projectsModel,
 	tagsModel,
@@ -44,9 +45,9 @@ vi.mock('vue-router', async () => {
 	return {
 		...actual,
 		useRoute: () => ({
-			params: { project_id: '123' }
-		})
-	}
+			params: { project_id: '123' },
+		}),
+	};
 });
 
 //export const { projectsModel, tagsModel, postsModel } = await import('@/lib/models');

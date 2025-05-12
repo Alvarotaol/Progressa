@@ -11,14 +11,10 @@
 			</nav>
 			<!-- Ícone do usuário com dropdown -->
 			<div class="relative" @click="toggleDropdown">
-				<img :src="storage.getUserAvatar()" alt="Usuário"
-					class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
+				<img :src="storage.getUserAvatar()" alt="Usuário" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
 
-				<div v-if="open"
-					class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg py-2 text-gray-700 z-50">
-					<button @click="logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 transition">
-						Sair
-					</button>
+				<div v-if="open" class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg py-2 text-gray-700 z-50">
+					<button @click="logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 transition">Sair</button>
 				</div>
 			</div>
 		</header>
@@ -32,11 +28,14 @@
 					<li v-for="project in projects" :key="project.id">
 						<router-link
 							class="hover:text-indigo-500 hover:border-indigo-500 block px-2 py-1 border-l-4 border-transparent"
-							:to="{ name: 'posts', params: { project_id: project.id } }">{{ project.name
-							}}</router-link>
+							:to="{ name: 'posts', params: { project_id: project.id } }">
+							{{ project.name }}
+						</router-link>
 					</li>
 				</ul>
-				<button tag="button" class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
+				<button
+					tag="button"
+					class="mt-6 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
 					@click="$router.push({ name: 'project.create' })">
 					+ Novo Projeto
 				</button>
@@ -65,7 +64,7 @@ const toggleDropdown = () => {
 const logout = () => {
 	request('logout').then(() => {
 		window.location.href = '/login';
-	})
+	});
 };
 
 const fetchProjects = () => {
