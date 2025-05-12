@@ -31,6 +31,12 @@ npm:
 bash:
 	docker-compose exec $(APP_CONTAINER) bash
 
+logs:
+	docker-compose logs -f
+
+test-ui:
+	docker-compose exec frontend npx vitest --ui
+
 
 # Comandos de produção
 # Subir ambiente de produção

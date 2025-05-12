@@ -3,9 +3,12 @@
 		:class="{ 'opacity-50': post.is_hidden }" v-if="!isEditing">
 		<!-- Botões de ação -->
 		<div class="absolute top-2 right-2 flex gap-2 text-gray-500 text-sm">
-			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true">✏️</button>
-			<button title="Ocultar" class="hover:text-yellow-500" @click="$emit('toggleHidden', post)">🙈</button>
-			<button title="Excluir" class="hover:text-red-500" @click="$emit('delete', post)">🗑️</button>
+			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true"
+				data-test="edit-post">✏️</button>
+			<button title="Ocultar" class="hover:text-yellow-500" @click="$emit('toggleHidden', post)">{{ post.is_hidden
+				? '👀' : '🙈' }}</button>
+			<button title="Excluir" class="hover:text-red-500" @click="$emit('delete', post)"
+				data-test="delete-post">🗑️</button>
 		</div>
 		<!-- Conteúdo do post -->
 		<p class="text-gray-800 my-2">{{ post.content }}</p>

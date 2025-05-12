@@ -1,5 +1,6 @@
 <template>
 	<div class="bg-white rounded-2xl shadow p-4 mb-6">
+		<!-- ProgressaNewPost -->
 		<h2 class="text-lg font-semibold mb-2" v-if="!is_edit">Novo post</h2>
 		<form @submit.prevent="submit">
 			<textarea v-model="content" rows="3"
@@ -10,8 +11,9 @@
 			<div class="mt-3" v-if="tags.length > 0">
 				<label class="block text-sm font-medium mb-1">Tags</label>
 				<div class="flex flex-wrap gap-2">
-					<button v-for="tag in toggleableTags" :key="tag.label" type="button" @click="tag.selected = !tag.selected"
-						class="px-3 py-1 text-xs rounded-full border transition" :style="{
+					<button v-for="tag in toggleableTags" :key="tag.label" type="button" :data-test="'tag-' + tag.id"
+						@click="tag.selected = !tag.selected" class="px-3 py-1 text-xs rounded-full border transition"
+						:style="{
 							backgroundColor: tag.selected ? tag.color : '#fff',
 							borderColor: '#00000055',
 							color: tag.selected ? '#000' : '#444'
@@ -22,9 +24,9 @@
 			</div>
 
 			<div class="flex justify-end mt-4">
-				<button type="button" @click="$emit('cancel')" v-if="is_edit"
+				<button type="button" @click="$emit('cancel')" v-if="is_edit" data-test="cancel-post"
 					class="text-gray-500 hover:text-gray-700 px-4 py-2 mr-2 rounded-lg border border-gray-300">Cancelar</button>
-				<button type="submit"
+				<button type="submit" data-test="submit-post"
 					class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
 					{{ is_edit ? 'Salvar alterações' : 'Publicar' }}
 				</button>
@@ -57,7 +59,7 @@ const emit = defineEmits<{
 }>()
 
 function submit() {
-	if (!content.value.trim()) return
+	if (!content.value.trim()) return;
 	const selectedTags = toggleableTags.value.filter(t => t.selected)
 	emit('submit', {
 		content: content.value.trim(),
@@ -67,9 +69,9 @@ function submit() {
 	toggleableTags.value.forEach(t => t.selected = false);
 }
 
-const init = function() {
+const init = function () {
 	toggleableTags.value = tags.map(tag => ({ ...tag, selected: false }));
-	if(post) {
+	if (post) {
 		content.value = post.content;
 		post.tags.forEach(tag => {
 			const index = toggleableTags.value.findIndex(t => t.label === tag.label)

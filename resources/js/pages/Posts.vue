@@ -5,23 +5,20 @@
 			<div class="flex justify-between items-center mb-6">
 				<h1 class="text-2xl font-bold">{{ project.name }}</h1>
 				<div class="flex gap-2">
-					<router-link
-						:to="{ name: 'project.edit', params: { project_id: project.id || 'new' } }"
-						class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700"
-					>
+					<router-link :to="{ name: 'project.edit', params: { project_id: project.id || 'new' } }"
+						class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700">
 						Editar projeto
 					</router-link>
-					<button
-						@click="copyLink"
-						class="text-sm bg-gray-100 text-gray-700 px-3 py-1.5 rounded border hover:bg-gray-200"
-					>
+					<button @click="copyLink"
+						class="text-sm bg-gray-100 text-gray-700 px-3 py-1.5 rounded border hover:bg-gray-200">
 						Obter link público
 					</button>
 				</div>
 			</div>
 
 			<ProgressaNewPost :tags="project.tags || []" @submit="handleNewPost" />
-			<ProgressaPost :post="post" :tags="project.tags || []" v-for="post in posts" :key="post.id" @delete="handleDeletePost" @edit="handleEditPost" @toggleHidden="handleToggleHiddenPost" />
+			<ProgressaPost :post="post" :tags="project.tags || []" v-for="post in posts" :key="post.id"
+				@delete="handleDeletePost" @edit="handleEditPost" @toggleHidden="handleToggleHiddenPost" />
 			<div ref="scrollSentinel" class="h-12 flex items-center justify-center text-sm text-gray-400">
 				<span v-if="loading">Carregando mais...</span>
 				<span v-if="currentPage === lastPage">Não há mais posts</span>
@@ -40,19 +37,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted, watch } from 'vue';
-import ProgressaPost from '@/components/ProgressaPost.vue';
 import ProgressaNewPost from '@/components/ProgressaNewPost.vue';
-import { Model } from '@/lib/http';
+import ProgressaPost from '@/components/ProgressaPost.vue';
 import { ModelId, Post, Project, Tag } from '@/types';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { postsModel, projectsModel } from '@/lib/models';
 
 const $route = useRoute();
-const postsModel = new Model('posts');
-const projectsModel = new Model('projects');
 
 const posts = ref<Post[]>([]);
-//const project_id = $route.params.project_id as string;
 const { project_id } = defineProps<{ project_id: string }>();
 const project = ref<Project>({ id: '', name: 'Projeto' } as Project);
 
