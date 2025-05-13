@@ -1,14 +1,18 @@
 <?php
+
 // app/Models/User.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable {
-	use HasApiTokens, Notifiable, HasFactory;
+	use HasApiTokens;
+	use Notifiable;
+	use HasFactory;
 
 	protected $fillable = ['name', 'email', 'avatar'];
 

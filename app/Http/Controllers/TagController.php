@@ -8,7 +8,6 @@ use App\Http\Requests\UpdateTagRequest;
 use App\Http\Resources\TagResource;
 use App\Models\Project;
 use App\Models\Tag;
-use Illuminate\Auth\Events\Validated;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TagController extends Controller {

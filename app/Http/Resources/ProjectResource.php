@@ -5,16 +5,14 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
-{
+class ProjectResource extends JsonResource {
 	/**
 	 * Transform the resource into an array.
 	 *
 	 * @return array<string, mixed>
 	 */
-	public function toArray(Request $request): array
-	{
-		if($this->isCollection($request)) {
+	public function toArray(Request $request): array {
+		if ($this->isCollection($request)) {
 			return $this->toArrayCollection($request);
 		} else {
 			return $this->toArraySingle($request);
@@ -46,5 +44,4 @@ class ProjectResource extends JsonResource
 	protected function isCollection(Request $request): bool {
 		return $request->routeIs('projects.index');
 	}
-
 }

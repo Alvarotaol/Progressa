@@ -8,7 +8,6 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\Project;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PostController extends Controller {
@@ -58,8 +57,9 @@ class PostController extends Controller {
 			throw new NotFoundHttpException('Post not found');
 		}
 		$post->update($request->all());
-		if (isset($request->tags))
+		if (isset($request->tags)) {
 			$post->tags()->sync($request->tags);
+		}
 
 		return new PostResource($post);
 	}
