@@ -4,6 +4,7 @@ import Login from '@/pages/Login.vue';
 import Posts from '@/pages/Posts.vue';
 import ProgressaLayout from '@/layouts/ProgressaLayout.vue';
 import ProjectForm from '@/pages/ProjectForm.vue';
+import PublicView from '@/pages/PublicView.vue';
 
 const routes = [
 	{
@@ -19,6 +20,7 @@ const routes = [
 		],
 	},
 	{ path: '/login', name: 'login', component: Login },
+	{ path: '/p/:slug', name: 'project.public', component: PublicView, props: true },
 	//{ path: '/', name: 'home', component: Home, },
 	{ path: '/:pathMatch(.*)*', name: 'not-found', component: Home },
 ];

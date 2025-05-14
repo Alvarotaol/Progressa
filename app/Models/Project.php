@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Project extends Model {
 	use HasFactory;
@@ -20,5 +21,13 @@ class Project extends Model {
 
 	public function tags() {
 		return $this->hasMany(Tag::class);
+	}
+
+	public function generatePublicSlug() {
+		if (!$this->is_public || $this->public_slug) {
+			return;
+		}
+		$this->public_slug = str($this->name)->slug() . '-' . Str::random(6);
+		$this->save();
 	}
 }

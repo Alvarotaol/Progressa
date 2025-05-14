@@ -1,7 +1,7 @@
 <template>
 	<div class="bg-white rounded-2xl shadow p-4 mb-4 relative transition-opacity" :class="{ 'opacity-50': post.is_hidden }" v-if="!isEditing">
 		<!-- Botões de ação -->
-		<div class="absolute top-2 right-2 flex gap-2 text-gray-500 text-sm">
+		<div class="absolute top-2 right-2 flex gap-2 text-gray-500 text-sm" v-if="!readonly">
 			<button title="Editar" class="hover:text-blue-500" @click="isEditing = true" data-test="edit-post">✏️</button>
 			<button title="Ocultar" class="hover:text-yellow-500" @click="$emit('toggleHidden', post)">
 				{{ post.is_hidden ? '👀' : '🙈' }}
@@ -32,9 +32,10 @@ import ProgressaTag from './ProgressaTag.vue';
 interface Props {
 	post: Post;
 	tags: Tag[];
+	readonly?: boolean;
 }
 
-const { post, tags } = defineProps<Props>();
+const { post, tags, readonly = false } = defineProps<Props>();
 const isEditing = ref(false);
 
 const $emit = defineEmits<{

@@ -23,3 +23,6 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::apiResource('posts', App\Http\Controllers\PostController::class);
     Route::apiResource('tags', App\Http\Controllers\TagController::class);
 });
+
+
+Route::get('p/{slug}', [App\Http\Controllers\ProjectController::class, 'showPublic'])->name('projects.public');

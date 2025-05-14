@@ -23,6 +23,7 @@ class ProjectController extends Controller {
 	 */
 	public function store(StoreProjectRequest $request) {
 		$project = $request->user()->projects()->create($request->all());
+		$project->generatePublicSlug();
 
 		return new ProjectResource($project);
 	}
@@ -37,11 +38,20 @@ class ProjectController extends Controller {
 		return new ProjectResource($project);
 	}
 
+	public function showPublic($slug) {
+		$project = Project::where('public_slug', $slug)->firstOrFail();
+		if (!$project || !$project->is_public) {
+			throw new NotFoundHttpException('Project not found');
+		}
+		return new ProjectResource($project);
+	}
+
 	/**
 	 * Update the specified resource in storage.
 	 */
 	public function update(UpdateProjectRequest $request, Project $project) {
 		$project->update($request->all());
+		$project->generatePublicSlug();
 
 		return new ProjectResource($project);
 	}

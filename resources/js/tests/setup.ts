@@ -40,12 +40,16 @@ vi.mock('@/lib/models', () => ({
 	postsModel,
 }));
 
+vi.mock('@/lib/http', () => ({
+	request: vi.fn(),
+}));
+
 vi.mock('vue-router', async () => {
 	const actual = await vi.importActual<typeof import('vue-router')>('vue-router');
 	return {
 		...actual,
 		useRoute: () => ({
-			params: { project_id: '123' },
+			params: { project_id: '123', slug: 'projeto-publico' },
 		}),
 	};
 });

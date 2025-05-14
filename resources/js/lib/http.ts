@@ -111,10 +111,15 @@ class Model {
 }
 
 const urlList: any = {
-	logout: {
+	'logout': {
 		url: '/logout',
 		method: 'post',
 		auth: true,
+	},
+	'public.project': {
+		url: '/p/:slug',
+		method: 'get',
+		auth: false,
 	},
 };
 
