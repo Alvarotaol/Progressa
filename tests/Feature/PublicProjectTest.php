@@ -41,10 +41,10 @@ class PublicProjectTest extends TestCase {
 	}
 
 	public function test_retorna_posts_paginados() {
-
 		Post::factory(30)->for($this->projectPublic)->create([
 			'is_hidden' => false,
 		]);
+
 		$response = $this->getJson(route('projects.public', ['slug' => $this->projectPublic->public_slug, 'page' => 2]));
 
 		$response->assertOk()
