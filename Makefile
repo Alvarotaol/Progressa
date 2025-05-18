@@ -1,6 +1,11 @@
 # Nome do container
 APP_CONTAINER=backend
 
+# Exportar variáveis de ambiente USER_ID e GROUP_ID
+export USER_ID=$(shell id -u)
+export GROUP_ID=$(shell id -g)
+
+
 # Comandos de desenvolvimento
 up:
 	docker-compose up -d
